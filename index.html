@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Monster Slayer</title>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <link rel="stylesheet" href="css/foundation.min.css">
     <link rel="stylesheet" href="css/app.css">
 </head>
@@ -10,18 +14,30 @@
 <div id="app">
     <section class="row">
         <div class="small-6 columns">
-            <h1 class="text-center">YOU</h1>
-            <div class="healthbar">
+            <h1 class="text-center"><span v-if="turn" style="color:blue;">&bull;</span>{{ starWarsPeople[0] }}</h1>
+            <div class="healthbar" :style="youLose">
                 <div class="healthbar text-center" :style="youStyles">
-                    <p>{{ youHealth }}</p>
+                    <p>{{ youHealth > 0 ? youHealth : '' }}</p>
+                </div>
+            </div>
+            <div class="power-wrap">
+                <p>Power</p>
+                <div class="power">
+                    <div class="power" :style="youPowerStyles"></div>
                 </div>
             </div>
         </div>
         <div class="small-6 columns">
-            <h1 class="text-center">MONSTER</h1>
-            <div class="healthbar">
+            <h1 class="text-center"><span v-if="!turn" style="color:blue;">&bull;</span>{{ starWarsPeople[1] }}</h1>
+            <div class="healthbar" :style="monsterLose">
                 <div class="healthbar text-center" :style="monsterStyles">
-                        <p>{{ monsterHealth }}</p>
+                        <p>{{ monsterHealth > 0 ? monsterHealth : '' }}</p>
+                </div>
+            </div>
+            <div class="power-wrap">
+                <p>Power</p>
+                <div class="power">
+                    <div class="power" :style="monsterPowerStyles"></div>
                 </div>
             </div>
         </div>
@@ -32,25 +48,27 @@
         </div>
     </section>
     <section class="row controls" v-show="startGame">
-        <div class="power">
-            <div class="power" :style="powerStyles"></div>
-        </div>
         <div class="small-12 columns">
-            <button id="attack">ATTACK</button>
-            <button id="special-attack">SPECIAL ATTACK</button>
-            <button id="block">BLOCK</button>
-            <button id="heal">HEAL</button>
-            <button id="obliterate" :disabled="powerStatus">OBLITERATE</button>
-            <button id="give-up">GIVE UP</button>
+            <button id="attack" @click="attack">ATTACK</button>
+            <button id="special-attack" @click="specialAttack">SPECIAL ATTACK</button>
+            <button id="block" @click="block">BLOCK</button>
+            <button id="heal" @click="heal">HEAL</button>
+            <button id="obliterate" :disabled="youPowerStatus" @click="obliterate" v-if="turn">OBLITERATE-Y</button>
+            <button id="obliterate" :disabled="monsterPowerStatus" @click="obliterate" v-else>OBLITERATE-M</button>
+            <button id="give-up" @click="giveUp">GIVE UP</button>
         </div>
     </section>
     <section class="row log" v-show="startGame">
         <div class="small-12 columns">
             <ul>
-                <li>
-
-                </li>
+                <li v-for="(hit, i) in hits" :key="hit" :class="i % 2 === 0 ? 'player-log' : 'monster-log'">{{ hit }}</li>
             </ul>
+        </div>
+    </section>
+    <section class="game-over-wrap" v-show="gameOver">
+        <div class="game-over">
+            <h1>GAME OVER</h1>
+            <button id="new-game" @click="startNewGame">New Game</button>
         </div>
     </section>
 </div>
@@ -60,14 +78,19 @@
         el: '#app',
         data: {
             startGame: false,
+            gameOver: false,
+            turn: true,
             youHealth: 100,
             monsterHealth: 100,
-            powerStatus: false,
+            youPowerStatus: true,
+            monsterPowerStatus: true,
+            youPower: 0,
+            monsterPower: 0,
             youStyles: {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                backgroundColor: "green",
+                background: "green",
                 margin: 0,
                 color: "white",
                 width: "100%",
@@ -76,22 +99,181 @@
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                backgroundColor: "green",
+                background: "green",
                 margin: 0,
                 color: "white",
                 width: "100%",
             },
-            powerStyles: {
-                backgroundColor: "#197BBD",
+            youPowerStyles: {
+                background: "#197BBD",
                 margin: 0,
-                width: "100%"
-            }
+                width: "0%"
+            },
+            monsterPowerStyles: {
+                background: "#197BBD",
+                margin: 0,
+                width: "0%"
+            },
+            youLose: {
+                background: "#eee"
+            },
+            monsterLose: {
+                background: "#eee"
+            },
+            hits: [],
+            starWarsPeople: []
+        },
+        created: function() {
+            axios.get("https://swapi.co/api/people")
+            .then(res => {
+                this.starWarsPeople.push(res.data.results[Math.floor(Math.random()*5)].name);
+                this.starWarsPeople.push(res.data.results[Math.floor(Math.random())].name);
+                // console.log(res.data.results[Math.floor(Math.random()*Math.floor(10))].name);
+            })
+            .catch( err => {throw err});
         },
         methods: {
             startNewGame: function(){
                 this.startGame = true;
+                this.turn = true;
                 this.youStyles.width = "100%";
+                this.youHealth = 100;
                 this.monsterStyles.width = "100%";
+                this.monsterHealth = 100;
+                this.youPower = 0
+                this.youPowerStyles.width = "0%";
+                this.monsterPower = 0
+                this.monsterPowerStyles.width = "0%";
+                this.gameOver = false;
+                this.youPowerStatus = true;
+                this.monsterPowerStatus = true;
+                this.hits = [];
+            },
+            attack: function() {
+                if(this.turn){
+                    let attackPower = this.youPower += 10;
+                    let monsterWidth = this.monsterHealth -= 5;
+                    this.monsterStyles.width = `${monsterWidth}%`;
+                    this.youPowerStyles.width = `${attackPower}%`;
+                    this.youPower >= 100 ? this.youPowerStatus = false : this.youPowerStatus = true;
+                    this.turn = false;
+                    this.hits.push(`${this.starWarsPeople[0]} hit ${this.starWarsPeople[1]} for 5. ${this.starWarsPeople[0]} gains 10 power.`);
+                    console.log(this.hits);
+                }
+                else {
+                    let attackPower = this.monsterPower += 10;
+                    let youWidth = this.youHealth -= 5;
+                    this.youStyles.width = `${youWidth}%`;
+                    this.monsterPowerStyles.width = `${attackPower}%`;
+                    this.monsterPower >= 100 ? this.monsterPowerStatus = false : this.monsterPowerStatus = true;
+                    this.turn = true;
+                    this.hits.push(`${this.starWarsPeople[1]} hit ${this.starWarsPeople[0]} for 5. ${this.starWarsPeople[1]} gains 10 power.`);
+                    console.log(this.hits);
+                }
+            },
+            specialAttack: function() {
+                if (this.turn) {
+                    let attackPower = this.youPower += 20;
+                    let monsterWidth = this.monsterHealth -= 10;
+                    this.monsterStyles.width = `${monsterWidth}%`;
+                    this.youPowerStyles.width = `${attackPower}%`;
+                    this.youPower >= 100 ? this.youPowerStatus = false : this.youPowerStatus = true;
+                    this.turn = false;
+                    this.hits.push(`${this.starWarsPeople[0]} hit ${this.starWarsPeople[1]} for 10. ${this.starWarsPeople[0]} gains 20 power.`);
+                }
+                else {
+                    let attackPower = this.monsterPower += 20;
+                    let youWidth = this.youHealth -= 10;
+                    this.youStyles.width = `${youWidth}%`;
+                    this.monsterPowerStyles.width = `${attackPower}%`;
+                    this.monsterPower >= 100 ? this.monsterPowerStatus = false : this.monsterPowerStatus = true;
+                    this.turn = true;
+                    this.hits.push(`${this.starWarsPeople[1]} hit ${this.starWarsPeople[0]} for 10. ${this.starWarsPeople[1]} gains 20 power.`);
+                }
+            },
+            block: function() {
+                if(this.turn){
+                    let youWidth = this.youHealth += 5;
+                    this.youStyles.width = `${youWidth}%`;
+                    this.youPower >= 100 ? this.youPowerStatus = false : this.youPowerStatus = true;
+                    this.turn = false;
+                    this.hits.push(`${this.starWarsPeople[0]} blocks ${this.starWarsPeople[1]} and gains 5 health.`);
+                }
+                else {
+                    let monsterWidth = this.monsterHealth += 5;
+                    this.monsterStyles.width = `${monsterWidth}%`;
+                    this.monsterPower >= 100 ? this.monsterPowerStatus = false : this.monsterPowerStatus = true;
+                    this.turn = true;
+                    this.hits.push(`${this.starWarsPeople[1]} blocks ${this.starWarsPeople[0]} and gains 5 health.`);
+                }
+            },
+            heal: function() {
+                if(this.turn){
+                    let attackPower = this.youPower -= 5;
+                    let youWidth = this.youHealth += 5;
+                    this.youStyles.width = `${youWidth}%`;
+                    this.youPowerStyles.width = `${attackPower}%`;
+                    this.youPower >= 100 ? this.youPowerStatus = false : this.youPowerStatus = true;
+                    this.turn = false;
+                    this.hits.push(`${this.starWarsPeople[0]} heals and gains 5 health, but loses 5 power.`);
+                }
+                else {
+                    let attackPower = this.monsterPower -= 5;
+                    let monsterWidth = this.monsterHealth += 5;
+                    this.monsterStyles.width = `${monsterWidth}%`;
+                    this.monsterPowerStyles.width = `${attackPower}%`;
+                    this.monsterPower >= 100 ? this.monsterPowerStatus = false : this.monsterPowerStatus = true;
+                    this.turn = true;
+                    this.hits.push(`${this.starWarsPeople[1]} heals and gains 5 health, but loses 5 power.`);
+                }
+            },
+            obliterate: function() {
+                if(this.turn) {
+                    this.monsterStyles.width = "0%";
+                    this.monsterHealth = 0;
+                    this.monsterPower = 0;
+                    this.monsterPowerStyles.width = "0%";
+                }
+                else {
+                    this.youStyles.width = "0%";
+                    this.youHealth = 0;
+                    this.youPower = 0;
+                    this.youPowerStyles.width = "0%";
+                }
+            },
+            giveUp: function() {
+                if(this.turn) {
+                    this.youStyles.width = "0%";
+                    this.youHealth = 0;
+                    this.youPower = 0
+                    this.youPowerStyles.width = "0%";
+                }
+                else {
+                    this.monsterStyles.width = "0%";
+                    this.monsterHealth = 0;
+                    this.monsterPower = 0
+                    this.monsterPowerStyles.width = "0%";
+                }
+            }
+        },
+        watch: {
+            youHealth: function() {
+                if(this.youHealth === 0){
+                    this.youLose.background = "red";
+                    this.gameOver = true;
+                }
+                else {
+                    this.youLose.background = "#eee";
+                }
+            },
+            monsterHealth: function() {
+                if(this.monsterHealth === 0) {
+                    this.monsterLose.background = "red";
+                    this.gameOver = true;
+                } 
+                else {
+                    this.monsterLose.background = "#eee";
+                }
             }
         }
     })

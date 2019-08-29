@@ -5,24 +5,34 @@
 .healthbar {
     width: 80%;
     height: 40px;
-    background-color: #eee;
+    background: #eee;
     margin: auto;
     transition: width 500ms;
 }
 
 .controls, .log {
-    margin-top: 30px;
+    margin-top: 20px;
     text-align: center;
     padding: 10px;
     border: 1px solid #ccc;
     box-shadow: 0px 3px 6px #ccc;
 }
 
-.power {
-    width: 60%;
-    height: 10px;
-    background-color: #eee;
+.power-wrap {
+    width: 80%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin: auto;
+}
+.power-wrap p {
+    margin-right: 10px;
+}
+
+.power {
+    width: 70%;
+    height: 10px;
+    background: #eee;
     transition: width 500ms;
 }
 
@@ -39,82 +49,111 @@
     text-transform: uppercase;
 }
 
-.log ul li {
-    margin: 5px;
-}
-
-.log ul .player-turn {
+.player-log {
     color: blue;
-    background-color: #e4e8ff;
+    background: #e4e8ff;
 }
 
-.log ul .monster-turn {
+.monster-log {
     color: red;
-    background-color: #ffc0c1;
+    background: #ffc0c1;
 }
 
 button {
     font-size: 20px;
-    background-color: #eee;
+    background: #eee;
     padding: 12px;
     box-shadow: 0 1px 1px black;
     margin: 10px;
 }
 
 #start-game {
-    background-color: #aaffb0;
+    background: #197BBD;
+    color: white;
 }
 
 #start-game:hover {
-    background-color: #76ff7e;
+    background: #4293C9;
 }
 
 #attack {
-    background-color: #ff7367;
+    background: #ff7367;
 }
 
 #attack:hover {
-    background-color: #ff3f43;
+    background: #ff3f43;
 }
 
 #special-attack {
-    background-color: #ffaf4f;
+    background: #ffaf4f;
 }
 
 #special-attack:hover {
-    background-color: #ff9a2b;
+    background: #ff9a2b;
 }
 #block {
-    background-color: #6CABD5;
+    background: #6CABD5;
 }
 
 #block:hover {
-    background-color: #4293C9;
+    background: #4293C9;
 }
 
 #heal {
-    background-color: #aaffb0;
+    background: #aaffb0;
 }
 
 #heal:hover {
-    background-color: #76ff7e;
+    background: #76ff7e;
 }
 #obliterate {
-    background-color: #0D0D0D;
+    background: #0D0D0D;
     color: white;
 }
 #obliterate:hover {
     color: red;
 }
 #obliterate:disabled {
-    background-color: #eee;
+    background: #eee;
     color: #c7c7c7;
 }
 
 #give-up {
-    background-color: #ffffff;
+    background: #ffffff;
 }
 
 #give-up:hover {
-    background-color: #c7c7c7;
+    background: #c7c7c7;
+}
+
+#new-game {
+    background: #197BBD;
+    color: white;
+}
+
+#new-game:hover {
+    background: #4293C9;
+}
+
+.game-over-wrap {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    background: #00000070;
+}
+.game-over {
+    background: white;
+    width: 300px;
+    height: 200px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 200px;
 }
