@@ -14,7 +14,7 @@
 <div id="app">
     <section class="row">
         <div class="small-6 columns">
-            <h1 class="text-center"><span v-if="turn" style="color:blue;">&bull;</span>{{ starWarsPeople[0] }}</h1>
+            <h1 class="text-center"><span v-if="turn" style="color:blue;">&bull;</span>You</h1>
             <div class="healthbar" :style="youLose">
                 <div class="healthbar text-center" :style="youStyles">
                     <p>{{ youHealth > 0 ? youHealth : '' }}</p>
@@ -28,7 +28,7 @@
             </div>
         </div>
         <div class="small-6 columns">
-            <h1 class="text-center"><span v-if="!turn" style="color:blue;">&bull;</span>{{ starWarsPeople[1] }}</h1>
+            <h1 class="text-center"><span v-if="!turn" style="color:blue;">&bull;</span>{{ !swapiChar ? "Loading Opponent..." : swapiChar }}</h1>
             <div class="healthbar" :style="monsterLose">
                 <div class="healthbar text-center" :style="monsterStyles">
                         <p>{{ monsterHealth > 0 ? monsterHealth : '' }}</p>
@@ -61,7 +61,7 @@
     <section class="row log" v-show="startGame">
         <div class="small-12 columns">
             <ul>
-                <li v-for="(hit, i) in hits" :key="hit" :class="i % 2 === 0 ? 'player-log' : 'monster-log'">{{ hit }}</li>
+                <li v-for="(hit, i) in hits" :key="`hit${i}`" :class="i % 2 === 0 ? 'player-log' : 'monster-log'">{{ hit }}</li>
             </ul>
         </div>
     </section>
@@ -121,14 +121,14 @@
                 background: "#eee"
             },
             hits: [],
-            starWarsPeople: []
+            swapiChar: ''
         },
         created: function() {
+            console.log('created');
             axios.get("https://swapi.co/api/people")
             .then(res => {
-                this.starWarsPeople.push(res.data.results[Math.floor(Math.random()*5)].name);
-                this.starWarsPeople.push(res.data.results[Math.floor(Math.random())].name);
-                // console.log(res.data.results[Math.floor(Math.random()*Math.floor(10))].name);
+                this.swapiChar = res.data.results[Math.floor(Math.random()*10)].name;
+                console.log(this.swapiChar);
             })
             .catch( err => {throw err});
         },
@@ -157,7 +157,7 @@
                     this.youPowerStyles.width = `${attackPower}%`;
                     this.youPower >= 100 ? this.youPowerStatus = false : this.youPowerStatus = true;
                     this.turn = false;
-                    this.hits.push(`${this.starWarsPeople[0]} hit ${this.starWarsPeople[1]} for 5. ${this.starWarsPeople[0]} gains 10 power.`);
+                    this.hits.push(`You hit ${this.swapiChar} for 5. You gain 10 power.`);
                     console.log(this.hits);
                 }
                 else {
@@ -167,7 +167,7 @@
                     this.monsterPowerStyles.width = `${attackPower}%`;
                     this.monsterPower >= 100 ? this.monsterPowerStatus = false : this.monsterPowerStatus = true;
                     this.turn = true;
-                    this.hits.push(`${this.starWarsPeople[1]} hit ${this.starWarsPeople[0]} for 5. ${this.starWarsPeople[1]} gains 10 power.`);
+                    this.hits.push(`${this.swapiChar} hit You for 5. ${this.swapiChar} gains 10 power.`);
                     console.log(this.hits);
                 }
             },
@@ -179,7 +179,7 @@
                     this.youPowerStyles.width = `${attackPower}%`;
                     this.youPower >= 100 ? this.youPowerStatus = false : this.youPowerStatus = true;
                     this.turn = false;
-                    this.hits.push(`${this.starWarsPeople[0]} hit ${this.starWarsPeople[1]} for 10. ${this.starWarsPeople[0]} gains 20 power.`);
+                    this.hits.push(`You hit ${this.swapiChar} for 10. You gain 20 power.`);
                 }
                 else {
                     let attackPower = this.monsterPower += 20;
@@ -188,7 +188,7 @@
                     this.monsterPowerStyles.width = `${attackPower}%`;
                     this.monsterPower >= 100 ? this.monsterPowerStatus = false : this.monsterPowerStatus = true;
                     this.turn = true;
-                    this.hits.push(`${this.starWarsPeople[1]} hit ${this.starWarsPeople[0]} for 10. ${this.starWarsPeople[1]} gains 20 power.`);
+                    this.hits.push(`${this.swapiChar} hit You for 10. ${this.swapiChar} gains 20 power.`);
                 }
             },
             block: function() {
@@ -197,14 +197,14 @@
                     this.youStyles.width = `${youWidth}%`;
                     this.youPower >= 100 ? this.youPowerStatus = false : this.youPowerStatus = true;
                     this.turn = false;
-                    this.hits.push(`${this.starWarsPeople[0]} blocks ${this.starWarsPeople[1]} and gains 5 health.`);
+                    this.hits.push(`You block ${this.swapiChar} and gain 5 health.`);
                 }
                 else {
                     let monsterWidth = this.monsterHealth += 5;
                     this.monsterStyles.width = `${monsterWidth}%`;
                     this.monsterPower >= 100 ? this.monsterPowerStatus = false : this.monsterPowerStatus = true;
                     this.turn = true;
-                    this.hits.push(`${this.starWarsPeople[1]} blocks ${this.starWarsPeople[0]} and gains 5 health.`);
+                    this.hits.push(`${this.swapiChar} blocks You and gains 5 health.`);
                 }
             },
             heal: function() {
@@ -215,7 +215,7 @@
                     this.youPowerStyles.width = `${attackPower}%`;
                     this.youPower >= 100 ? this.youPowerStatus = false : this.youPowerStatus = true;
                     this.turn = false;
-                    this.hits.push(`${this.starWarsPeople[0]} heals and gains 5 health, but loses 5 power.`);
+                    this.hits.push(`You heal and gain 5 health, but lose 5 power.`);
                 }
                 else {
                     let attackPower = this.monsterPower -= 5;
@@ -224,7 +224,7 @@
                     this.monsterPowerStyles.width = `${attackPower}%`;
                     this.monsterPower >= 100 ? this.monsterPowerStatus = false : this.monsterPowerStatus = true;
                     this.turn = true;
-                    this.hits.push(`${this.starWarsPeople[1]} heals and gains 5 health, but loses 5 power.`);
+                    this.hits.push(`${this.swapiChar} heals and gains 5 health, but loses 5 power.`);
                 }
             },
             obliterate: function() {
@@ -270,7 +270,7 @@
                 if(this.monsterHealth === 0) {
                     this.monsterLose.background = "red";
                     this.gameOver = true;
-                } 
+                }
                 else {
                     this.monsterLose.background = "#eee";
                 }
