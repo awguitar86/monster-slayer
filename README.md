@@ -6,7 +6,7 @@ First off, this game was suppose to be against a monster, but I added a little h
 
 This game is different from the one Max does on his course in a few ways:
 
-* Again, I added a little http reqest to grab characters from swapi and it's random so it'll be a different character everytime you reload the page. 
+* Again, I added a little http reqest to grab characters from swapi and it's random so it'll be a different character everytime you reload the page. The only thing s that sometimes swapi is really slow and it takes a little while to load. Be patient :)
 * I added a Block and Obliterate button. 
   * The block button gives you a little health back.
   * The Obliterate button, yep you guessed it, obliterates the opponent. But this button is only available for use when your power is full.
