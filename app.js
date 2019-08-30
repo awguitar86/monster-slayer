@@ -80,42 +80,46 @@ new Vue({
         },
         attack() {
             if(this.turn){
+                let damage = this.damage(1, 6);
                 let attackPower = this.youPower >= 100 ? 100 : this.youPower += 10;
-                let monsterWidth = this.monsterHealth -= this.damage(1, 6);
+                let monsterWidth = this.monsterHealth -= damage;
                 this.monsterStyles.width = `${monsterWidth}%`;
                 this.youPowerStyles.width = `${attackPower}%`;
                 this.youPower >= 100 ? this.youPowerStatus = false : this.youPowerStatus = true;
                 this.turn = false;
-                this.hits.push(`You hit ${this.swapiChar} for 5. You gain 10 power.`);
+                this.hits.push(`You hit ${this.swapiChar} for ${damage}. You gain 10 power.`);
             }
             else {
+                let damage = this.damage(1, 6);
                 let attackPower = this.monsterPower >= 100 ? 100 : this.monsterPower += 10;
-                let youWidth = this.youHealth -= this.damage(1, 6);
+                let youWidth = this.youHealth -= damage;
                 this.youStyles.width = `${youWidth}%`;
                 this.monsterPowerStyles.width = `${attackPower}%`;
                 this.monsterPower >= 100 ? this.monsterPowerStatus = false : this.monsterPowerStatus = true;
                 this.turn = true;
-                this.hits.push(`${this.swapiChar} hit You for 5. ${this.swapiChar} gains 10 power.`);
+                this.hits.push(`${this.swapiChar} hit You for ${damage}. ${this.swapiChar} gains 10 power.`);
             }
         },
         specialAttack() {
             if (this.turn) {
+                let damage = this.damage(7, 12);
                 let attackPower = this.youPower >= 100 ? 100 : this.youPower += 20;
-                let monsterWidth = this.monsterHealth -= this.damage(7, 12);
+                let monsterWidth = this.monsterHealth -= damage;
                 this.monsterStyles.width = `${monsterWidth}%`;
                 this.youPowerStyles.width = `${attackPower}%`;
                 this.youPower >= 100 ? this.youPowerStatus = false : this.youPowerStatus = true;
                 this.turn = false;
-                this.hits.push(`You hit ${this.swapiChar} for 10. You gain 20 power.`);
+                this.hits.push(`You hit ${this.swapiChar} for ${damage}. You gain 20 power.`);
             }
             else {
+                let damage = this.damage(7, 12);
                 let attackPower = this.monsterPower >= 100 ? 100 : this.monsterPower += 20;
-                let youWidth = this.youHealth -= this.damage(7, 12);
+                let youWidth = this.youHealth -= damage;
                 this.youStyles.width = `${youWidth}%`;
                 this.monsterPowerStyles.width = `${attackPower}%`;
                 this.monsterPower >= 100 ? this.monsterPowerStatus = false : this.monsterPowerStatus = true;
                 this.turn = true;
-                this.hits.push(`${this.swapiChar} hit You for 10. ${this.swapiChar} gains 20 power.`);
+                this.hits.push(`${this.swapiChar} hit You for ${damage}. ${this.swapiChar} gains 20 power.`);
             }
         },
         block() {
