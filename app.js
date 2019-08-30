@@ -75,10 +75,13 @@ new Vue({
             this.monsterPowerStatus = true;
             this.hits = [];
         },
+        damage(min, max) {
+            return Math.max(Math.floor(Math.random() * max) + 1, min);
+        },
         attack() {
             if(this.turn){
                 let attackPower = this.youPower >= 100 ? 100 : this.youPower += 10;
-                let monsterWidth = this.monsterHealth -= 5;
+                let monsterWidth = this.monsterHealth -= this.damage(1, 6);
                 this.monsterStyles.width = `${monsterWidth}%`;
                 this.youPowerStyles.width = `${attackPower}%`;
                 this.youPower >= 100 ? this.youPowerStatus = false : this.youPowerStatus = true;
@@ -87,7 +90,7 @@ new Vue({
             }
             else {
                 let attackPower = this.monsterPower >= 100 ? 100 : this.monsterPower += 10;
-                let youWidth = this.youHealth -= 5;
+                let youWidth = this.youHealth -= this.damage(1, 6);
                 this.youStyles.width = `${youWidth}%`;
                 this.monsterPowerStyles.width = `${attackPower}%`;
                 this.monsterPower >= 100 ? this.monsterPowerStatus = false : this.monsterPowerStatus = true;
@@ -98,7 +101,7 @@ new Vue({
         specialAttack() {
             if (this.turn) {
                 let attackPower = this.youPower >= 100 ? 100 : this.youPower += 20;
-                let monsterWidth = this.monsterHealth -= 10;
+                let monsterWidth = this.monsterHealth -= this.damage(7, 12);
                 this.monsterStyles.width = `${monsterWidth}%`;
                 this.youPowerStyles.width = `${attackPower}%`;
                 this.youPower >= 100 ? this.youPowerStatus = false : this.youPowerStatus = true;
@@ -107,7 +110,7 @@ new Vue({
             }
             else {
                 let attackPower = this.monsterPower >= 100 ? 100 : this.monsterPower += 20;
-                let youWidth = this.youHealth -= 10;
+                let youWidth = this.youHealth -= this.damage(7, 12);
                 this.youStyles.width = `${youWidth}%`;
                 this.monsterPowerStyles.width = `${attackPower}%`;
                 this.monsterPower >= 100 ? this.monsterPowerStatus = false : this.monsterPowerStatus = true;
