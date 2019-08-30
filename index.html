@@ -13,13 +13,7 @@
 <body>
 <div id="app">
     <section class="loading-game" v-show="loadingGame">
-        <h1>
-            LOADING GAME
-            <span v-if="loading > 0">&bull;</span>
-            <span v-if="loading > 1">&bull;</span>
-            <span v-if="loading > 2">&bull;</span>
-            <span v-if="loading > 3">&bull;</span>
-        </h1>
+        <h1>LOADING GAME . . .</h1>
     </section>
     <section class="row" v-show="!loadingGame">
         <div class="small-6 columns">
@@ -76,7 +70,7 @@
     </section>
     <section class="modal-wrap" v-show="gameOver">
         <div class="modal">
-            <h1>GAME OVER</h1>
+            <h1>{{ monsterHealth === 0 ? "YOU WIN!" : "YOU LOSE." }}</h1>
             <button id="new-game" @click="startNewGame">New Game</button>
         </div>
     </section>
@@ -87,7 +81,6 @@
         el: '#app',
         data: {
             loadingGame: true,
-            loading: 0,
             startGame: false,
             gameOver: false,
             turn: true,
@@ -143,13 +136,6 @@
                 this.loadingGame = false;
             })
             .catch( err => {throw err});
-            if(!this.swapiChar){
-                this.loadingGame = true;
-                let th = this;
-                setTimeout( function(){
-                    th.loading += 1;
-                }, 500);
-            }
         },
         methods: {
             startNewGame: function(){
@@ -170,7 +156,7 @@
             },
             attack: function() {
                 if(this.turn){
-                    let attackPower = this.youPower += 10;
+                    let attackPower = this.youPower === 100 ? 100 : this.youPower += 10;
                     let monsterWidth = this.monsterHealth -= 5;
                     this.monsterStyles.width = `${monsterWidth}%`;
                     this.youPowerStyles.width = `${attackPower}%`;
@@ -179,7 +165,7 @@
                     this.hits.push(`You hit ${this.swapiChar} for 5. You gain 10 power.`);
                 }
                 else {
-                    let attackPower = this.monsterPower += 10;
+                    let attackPower = this.monsterPower === 100 ? 100 : this.monsterPower += 10;
                     let youWidth = this.youHealth -= 5;
                     this.youStyles.width = `${youWidth}%`;
                     this.monsterPowerStyles.width = `${attackPower}%`;
@@ -190,7 +176,7 @@
             },
             specialAttack: function() {
                 if (this.turn) {
-                    let attackPower = this.youPower += 20;
+                    let attackPower = this.youPower === 100 ? 100 : this.youPower += 20;
                     let monsterWidth = this.monsterHealth -= 10;
                     this.monsterStyles.width = `${monsterWidth}%`;
                     this.youPowerStyles.width = `${attackPower}%`;
@@ -199,7 +185,7 @@
                     this.hits.push(`You hit ${this.swapiChar} for 10. You gain 20 power.`);
                 }
                 else {
-                    let attackPower = this.monsterPower += 20;
+                    let attackPower = this.monsterPower === 100 ? 100 : this.monsterPower += 20;
                     let youWidth = this.youHealth -= 10;
                     this.youStyles.width = `${youWidth}%`;
                     this.monsterPowerStyles.width = `${attackPower}%`;
