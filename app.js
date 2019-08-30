@@ -182,7 +182,7 @@ new Vue({
     },
     watch: {
         youHealth() {
-            if(this.youHealth === 0){
+            if(this.youHealth <= 0){
                 this.youLose.background = "red";
                 this.gameOver = true;
             }
@@ -191,7 +191,7 @@ new Vue({
             }
         },
         monsterHealth() {
-            if(this.monsterHealth === 0) {
+            if(this.monsterHealth <= 0) {
                 this.monsterLose.background = "red";
                 this.gameOver = true;
             }
