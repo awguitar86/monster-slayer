@@ -45,7 +45,7 @@
             </div>
         </div>
     </section>
-    <section class="row controls" v-show="!loadingGame">
+    <section class="row controls" v-show="!startGame" v-if="!loadingGame">
         <div class="small-12 columns">
             <button id="start-game" @click="startNewGame">START NEW GAME</button>
         </div>
