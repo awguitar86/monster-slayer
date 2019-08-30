@@ -135,7 +135,7 @@ button {
     background: #4293C9;
 }
 
-.game-over-wrap {
+.modal-wrap {
     position: fixed;
     left: 0;
     top: 0;
@@ -146,7 +146,7 @@ button {
     align-items: flex-start;
     background: #00000070;
 }
-.game-over {
+.modal {
     background: white;
     width: 300px;
     height: 200px;
@@ -156,4 +156,14 @@ button {
     justify-content: center;
     align-items: center;
     margin-top: 200px;
+}
+.loading-game {
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    margin-top: 50px;
+}
+.loading-game span {
+    margin-left: 10px;
 }

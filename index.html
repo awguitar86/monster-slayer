@@ -12,7 +12,16 @@
 </head>
 <body>
 <div id="app">
-    <section class="row">
+    <section class="loading-game" v-show="loadingGame">
+        <h1>
+            LOADING GAME
+            <span v-if="loading > 0">&bull;</span>
+            <span v-if="loading > 1">&bull;</span>
+            <span v-if="loading > 2">&bull;</span>
+            <span v-if="loading > 3">&bull;</span>
+        </h1>
+    </section>
+    <section class="row" v-show="!loadingGame">
         <div class="small-6 columns">
             <h1 class="text-center"><span v-if="turn" style="color:blue;">&bull;</span>You</h1>
             <div class="healthbar" :style="youLose">
@@ -42,7 +51,7 @@
             </div>
         </div>
     </section>
-    <section class="row controls">
+    <section class="row controls" v-show="!loadingGame">
         <div class="small-12 columns">
             <button id="start-game" @click="startNewGame">START NEW GAME</button>
         </div>
@@ -53,8 +62,8 @@
             <button id="special-attack" @click="specialAttack">SPECIAL ATTACK</button>
             <button id="block" @click="block">BLOCK</button>
             <button id="heal" @click="heal">HEAL</button>
-            <button id="obliterate" :disabled="youPowerStatus" @click="obliterate" v-if="turn">OBLITERATE-Y</button>
-            <button id="obliterate" :disabled="monsterPowerStatus" @click="obliterate" v-else>OBLITERATE-M</button>
+            <button id="obliterate" :disabled="youPowerStatus" @click="obliterate" v-if="turn">OBLITERATE</button>
+            <button id="obliterate" :disabled="monsterPowerStatus" @click="obliterate" v-else>OBLITERATE</button>
             <button id="give-up" @click="giveUp">GIVE UP</button>
         </div>
     </section>
@@ -65,8 +74,8 @@
             </ul>
         </div>
     </section>
-    <section class="game-over-wrap" v-show="gameOver">
-        <div class="game-over">
+    <section class="modal-wrap" v-show="gameOver">
+        <div class="modal">
             <h1>GAME OVER</h1>
             <button id="new-game" @click="startNewGame">New Game</button>
         </div>
@@ -77,6 +86,8 @@
     new Vue({
         el: '#app',
         data: {
+            loadingGame: true,
+            loading: 0,
             startGame: false,
             gameOver: false,
             turn: true,
@@ -129,8 +140,16 @@
             .then(res => {
                 this.swapiChar = res.data.results[Math.floor(Math.random()*10)].name;
                 console.log(this.swapiChar);
+                this.loadingGame = false;
             })
             .catch( err => {throw err});
+            if(!this.swapiChar){
+                this.loadingGame = true;
+                let th = this;
+                setTimeout( function(){
+                    th.loading += 1;
+                }, 500);
+            }
         },
         methods: {
             startNewGame: function(){
@@ -158,7 +177,6 @@
                     this.youPower >= 100 ? this.youPowerStatus = false : this.youPowerStatus = true;
                     this.turn = false;
                     this.hits.push(`You hit ${this.swapiChar} for 5. You gain 10 power.`);
-                    console.log(this.hits);
                 }
                 else {
                     let attackPower = this.monsterPower += 10;
@@ -168,7 +186,6 @@
                     this.monsterPower >= 100 ? this.monsterPowerStatus = false : this.monsterPowerStatus = true;
                     this.turn = true;
                     this.hits.push(`${this.swapiChar} hit You for 5. ${this.swapiChar} gains 10 power.`);
-                    console.log(this.hits);
                 }
             },
             specialAttack: function() {
